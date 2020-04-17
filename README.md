@@ -12,7 +12,6 @@ univention-install git
 
 After `git` has been installed it needs to be cloned to the local disk by running the below command and afterwards switch into the newly created directory.
 
-TODO: move repo to a more official looking location. Where?
 ```bash
 $ git clone https://github.com/Kopano-dev/ucs-oidc-webapp
 $ cd ucs-oidc-webapp
