@@ -1,0 +1,41 @@
+version: "2.0"
+
+services:
+    kopano_ssl:
+        image: kopano/kopano_ssl:latest
+        environment:
+          - FQDN=${FQDN_KONNECT}
+          - PKI_COUNTRY=DE
+        volumes:
+          - /etc/kopano/docker/:/kopano/ssl
+
+    kopano_konnect:
+        image: fbartels/kopano_konnect:0.30.0@sha256:f9fb104bb0a7bba04d50760ea6f9cf751b35ce759c8c95b237c88eb4766f9122
+        restart: always
+        depends_on:
+          - kopano_ssl
+        ports:
+          - 127.0.0.1:38777:8777
+        volumes:
+          - /etc/kopano/docker/:/kopano/ssl
+          - /etc/machine-id:/etc/machine-id
+          - /etc/ssl/certs:/etc/ssl/certs:ro
+          - /etc/machine-id:/var/lib/dbus/machine-id
+          - /run/kopano:/run/kopano
+        environment:
+          - external_oidc_clientsecret=${clientsecret}
+          - external_oidc_name=ucs-konnect
+          - external_oidc_provider=yes
+          - external_oidc_clientid=kopano-webapp
+          - external_oidc_url=https://${FQDN_SSO}
+          - FQDN=${FQDN_KONNECT}/kopanoid
+          - identifier_registration_conf=/kopano/ssl/konnectd-identifier-registration.yaml
+          - identifier_scopes_conf=/etc/kopano/konnectd-identifier-scopes.yaml
+          - signing_private_key=/kopano/ssl/konnectd-tokens-signing-key.pem
+          - encryption_secret_key=/kopano/ssl/konnectd-encryption.key          
+          - insecure=${INSECURE}
+          - KONNECT_BACKEND=kc
+          - uri_base_path=/kopanoid
+          - log_level=debug
+          - KOPANO_SERVER_USERNAME=oidc-helper
+          - KOPANO_SERVER_PASSWORD=${OIDCLOGIN}
