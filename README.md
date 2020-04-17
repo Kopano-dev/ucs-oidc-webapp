@@ -14,8 +14,8 @@ After `git` has been installed it needs to be cloned to the local disk by runnin
 
 TODO: move repo to a more official looking location. Where?
 ```bash
-$ git clone https://stash.kopano.io/scm/~fbartels/ucs-oidc.git
-$ cd ucs-oidc
+$ git clone https://github.com/Kopano-dev/ucs-oidc-webapp
+$ cd ucs-oidc-webapp
 $ ls
 LICENSE.txt  README.md  docker-compose.yml  run.sh
 ```
