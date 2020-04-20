@@ -13,6 +13,11 @@ random_string() {
     LC_CTYPE=C tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c32
 }
 
+if [ ! "$(id -u)" -eq 0 ]; then
+	echo "This script needs to be run as root or through sudo"
+	exit 1
+fi
+
 # install git to make the version lookup succeed
 dpkg -s git 2>/dev/null >/dev/null || univention-install git
 
