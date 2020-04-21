@@ -21,6 +21,14 @@ fi
 # install git to make the version lookup succeed
 dpkg -s git 2>/dev/null >/dev/null || univention-install git
 
+DOCKERIZE_VERSION=0.11.0
+
+if ! command -v dockerize > /dev/null; then
+    curl -sfL "https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VERSION/dockerize-$(uname -s)-$(uname -m)" \
+    | install /dev/stdin /usr/local/bin/dockerize
+    dockerize --version
+fi
+
 if [ "$(ucr get appcenter/apps/kopano-core/status)" != "installed" ]; then
     echo "Kopano Core is not installed"
     exit 1
@@ -52,17 +60,14 @@ source .env
 
 # Create helper user to establish a global session for Konnect (required for external auth provider usage)
 udm users/user create "$@" --ignore_exists \
-    --position "cn=kopano,"$ldap_base"" \
-    --set "username"="oidc-helper" \
-    --set "description"="Kopano OpenID Connect Helper" \
-    --set "password"="$OIDCLOGIN" \
-    --set "lastname"="OIDC Helper" \
+    --position cn=kopano,"$ldap_base" \
+    --set username="oidc-helper" \
+    --set description="Kopano OpenID Connect Helper" \
+    --set password="$OIDCLOGIN" \
+    --set lastname="OIDC Helper" \
     --set mailPrimaryAddress="oidc@$(ucr get domainname)" \
-	--set kopano-role=user \
+    --set kopano-role=user \
     --set kopano-user-hidden=1
-
-# Sync user list to create the new user
-kopano-admin --sync
 
 # remove oidc registration so that it can be readded with potentially a new fqdn
 # will print a "E: object not found" to the log if entry is not there
@@ -70,13 +75,13 @@ udm oidc/rpservice remove "$@" --dn cn=kopano-core,cn=oidc,cn=univention,"$(ucr 
 
 # add oidc registration. ucs will take care of restarting the app
 udm oidc/rpservice create "$@" --ignore_exists \
- --set name=kopano-core \
- --position=cn=oidc,cn=univention,"$(ucr get ldap/base)" \
- --set clientid=kopano-webapp \
- --set clientsecret="$clientsecret" \
- --set trusted=yes \
- --set applicationtype=web \
- --set redirectURI="https://$FQDN_KONNECT/kopanoid/signin/v1/identifier/oauth2/cb"
+    --set name=kopano-core \
+    --position=cn=oidc,cn=univention,"$(ucr get ldap/base)" \
+    --set clientid=kopano-webapp \
+    --set clientsecret="$clientsecret" \
+    --set trusted=yes \
+    --set applicationtype=web \
+    --set redirectURI="https://$FQDN_KONNECT/kopanoid/signin/v1/identifier/oauth2/cb"
 
 # apache2 conf
 cat << EOF >/etc/apache2/ucs-sites.conf.d/kopano-konnect.conf
@@ -93,22 +98,28 @@ mv /etc/kopano/webapp/config.php-quotes /etc/kopano/webapp/config.php
 
 # Set config options in WebApp and kopano-core for oidc
 ucr set \
-	kopano/webapp/config/LANG?'"en_US"' \
-	kopano/webapp/config/OIDC_ISS="\"https://$FQDN_KONNECT/kopanoid/"\" \
-	kopano/webapp/config/OIDC_CLIENT_ID='"Kopano-WebApp"' \
-	kopano/cfg/server/kcoidc_issuer_identifier="https://$FQDN_KONNECT/kopanoid/" \
-	kopano/cfg/server/enable_sso=yes \
-	kopano/cfg/server/kcoidc_initialize_timeout?360
+    kopano/webapp/config/LANG?'"en_US"' \
+    kopano/webapp/config/OIDC_ISS="\"https://$FQDN_KONNECT/kopanoid/"\" \
+    kopano/webapp/config/OIDC_CLIENT_ID='"Kopano-WebApp"' \
+    kopano/cfg/server/kcoidc_issuer_identifier="https://$FQDN_KONNECT/kopanoid" \
+    kopano/cfg/server/enable_sso=yes \
+    kopano/cfg/server/kcoidc_initialize_timeout?360
 
 # run the following to undo:
 # ucr unset kopano/webapp/config/OIDC_ISS kopano/webapp/config/OIDC_CLIENT_ID kopano/cfg/server/kcoidc_issuer_identifier kopano/cfg/server/enable_sso && systemctl restart kopano-server
 # pull containers before starting
 docker-compose pull
 
-# restart kopano-server to apply changes
-systemctl restart kopano-server
-
 # start containers
 docker-compose up -d
 
+echo "restart kopano-server to apply changes"
+systemctl restart kopano-server
+
 echo "Please go to https://$FQDN_KONNECT/webapp to log into Kopano WebApp via oidc."
+
+echp "Waiting for kopano-server to startup, then syncing user list to create the new user"
+dockerize \
+        -wait tcp://127.0.0.1:236 \
+        -timeout 120s \
+	kopano-admin --sync
