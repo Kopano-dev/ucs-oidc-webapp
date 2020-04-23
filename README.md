@@ -34,18 +34,21 @@ Running the script should only take a few moments. After it has completed it wil
 ## Things you should know
 
 - The OpenID Connect flow is sensitive to the domain name its called with. FQDN_KONNECT should reflect both the domain that Konnect and WebApp are reachable under.
+- In case your system is not reachable through the default domains just specify any differing values during the run of the script
+  - Please refer to the documentation of the OpenID Provider app on changing its domain
 - When enabling OIDC login for WebApp the old login mechanism is no longer available.
 - When configuring OIDC login for kopano-server then kopano-server needs to resolve the oidc discovery document at startup (which means Konnect must already be running).
-- /etc/ssl is mounted into the Konnect container, so all ssl certificates trusted by the host are also trusted by Konnect.
+- `/etc/ssl` is mounted into the Konnect container, so all ssl certificates trusted by the host are also trusted by Konnect.
 
 ## Known issues
 
-- Logging out of Kopano WebApp (and therefore the internal Konnect instance) will not log the user out of the Univention OpenID Provider
+- ~~Logging out of Kopano WebApp (and therefore the internal Konnect instance) will not log the user out of the Univention OpenID Provider~~ no longer the case with the Kopano Konnect >= 0.33.0
 - When opening from an url other than $FQDN_KONNECT there will be redirection to the OpenID Provider. To circumvent this from happening every access from a different domain than the expected should be rewritten.
   - Example:
   ```
-  RewriteCond %{REQUEST_URI} ^/webapp$ [OR]
-  RewriteCond %{REQUEST_URI} ^/webapp/
-  RewriteCond %{HTTP_HOST} !^$FQDN_KONNECT$ [NC]
-  RewriteRule ^(.*)$ https://$FQDN_KONNECT/webapp/ [R,L]
+RewriteCond %{REQUEST_URI} ^/webapp$ [OR]
+RewriteCond %{REQUEST_URI} ^/webapp/
+RewriteCond %{HTTP_HOST} !^$FQDN_KONNECT$ [NC]
+RewriteRule ^(.*)$ https://$FQDN_KONNECT/webapp/ [R,L]
 ```
+  - add this to conf-enabled during script run?
