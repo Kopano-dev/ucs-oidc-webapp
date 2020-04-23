@@ -45,7 +45,7 @@ Running the script should only take a few moments. After it has completed it wil
 - ~~Logging out of Kopano WebApp (and therefore the internal Konnect instance) will not log the user out of the Univention OpenID Provider~~ no longer the case with the Kopano Konnect >= 0.33.0
 - When opening from an url other than $FQDN_KONNECT there will be redirection to the OpenID Provider. To circumvent this from happening every access from a different domain than the expected should be rewritten.
   - Example:
-  ```
+```
 RewriteCond %{REQUEST_URI} ^/webapp$ [OR]
 RewriteCond %{REQUEST_URI} ^/webapp/
 RewriteCond %{HTTP_HOST} !^$FQDN_KONNECT$ [NC]
