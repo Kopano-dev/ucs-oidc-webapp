@@ -77,3 +77,5 @@ Add the following block at the end of `/var/lib/univention-appcenter/apps/ownclo
     'use-token-introspection-endpoint' => false
   ]
 ```
+
+Run `./owncloud.sh` to add an entry for ownCloud to the openid-provider configuration registry.
