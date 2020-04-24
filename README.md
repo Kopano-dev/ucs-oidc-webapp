@@ -52,3 +52,28 @@ RewriteCond %{HTTP_HOST} !^$FQDN_KONNECT$ [NC]
 RewriteRule ^(.*)$ https://$FQDN_KONNECT/webapp/ [R,L]
 ```
   - add this to conf-enabled during script run?
+
+
+## Configure OIDC login for ownCloud
+
+Enable the oidc plugin in the ownCloud app:
+
+```bash
+univention-app shell ownloud occ app:enable openidconnect
+```
+
+Add the following block at the end of `/var/lib/univention-appcenter/apps/owncloud/conf/config.php`:
+
+```php
+  'openid-connect' => [
+    'provider-url' => 'https://ucs-sso.kopano.intranet',
+    'client-id' => 'owncloud',
+    'client-secret' => 'owncloud',
+    'loginButtonName' => 'OpenID Connect',
+    'autoRedirectOnLoginPage' => false,
+    'redirect-url' => 'https://ucs-1555.kopano.intranet/owncloud/index.php/apps/openidconnect/redirect',
+    'mode' => 'email',
+    'search-attribute' => 'email',
+    'use-token-introspection-endpoint' => false
+  ]
+```
