@@ -99,6 +99,13 @@ ProxyPass /kopanoid/.well-known/openid-configuration http://127.0.0.1:38777/.wel
 ProxyPass /kopanoid/ http://127.0.0.1:38777/kopanoid/ retry=0
 EOF
 
+cat << EOF >/etc/apache2/ucs-sites.conf.d/kopano-webapp.conf
+RewriteCond %{REQUEST_URI} ^/webapp$ [OR]
+RewriteCond %{REQUEST_URI} ^/webapp/
+RewriteCond %{HTTP_HOST} !^$FQDN_KONNECT$ [NC]
+RewriteRule ^(.*)$ https://$FQDN_KONNECT/webapp/ [R,L]
+EOF
+
 invoke-rc.d apache2 reload
 
 # Fix quoting in config.php so that the listener can properly update it
