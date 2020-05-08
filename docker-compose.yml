@@ -2,7 +2,7 @@ version: "2.0"
 
 services:
     kopano_ssl:
-        image: kopano/kopano_ssl:latest
+        image: kopano/kopano_ssl:1.2.0
         environment:
           - FQDN=${FQDN_KONNECT}
           - PKI_COUNTRY=DE
@@ -10,7 +10,7 @@ services:
           - /etc/kopano/docker/:/kopano/ssl
 
     kopano_konnect:
-        image: fbartels/kopano_konnect:0.30.0@sha256:f9fb104bb0a7bba04d50760ea6f9cf751b35ce759c8c95b237c88eb4766f9122
+        image: kopano/kopano_konnect:0.30.0
         restart: always
         depends_on:
           - kopano_ssl
