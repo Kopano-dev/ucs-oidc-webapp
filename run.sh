@@ -18,6 +18,9 @@ if [ ! "$(id -u)" -eq 0 ]; then
 	exit 1
 fi
 
+# switch to dir of script in case its executed from somewhere else
+cd "$(dirname "$(readlink -f "$0")")"
+
 # install git to make the version lookup succeed
 dpkg -s git 2>/dev/null >/dev/null || univention-install git
 
