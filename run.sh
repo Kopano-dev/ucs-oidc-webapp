@@ -24,7 +24,7 @@ cd "$(dirname "$(readlink -f "$0")")"
 # install git to make the version lookup succeed
 dpkg -s git 2>/dev/null >/dev/null || univention-install git
 
-DOCKERIZE_VERSION=0.11.0
+DOCKERIZE_VERSION=0.11.6
 
 if ! command -v dockerize > /dev/null; then
     curl -sfL "https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VERSION/dockerize-$(uname -s)-$(uname -m)" \
