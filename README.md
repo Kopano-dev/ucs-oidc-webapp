@@ -25,7 +25,7 @@ To ensure compatibility with the configuration listener of Kopano4UCS the script
 
 ## Running the script
 
-To configure your Kopano Core and the Kopano WebApp app for login via OpenID Connect just run the script once. Running the script will take care of configuring the OpenID Connect Provider App, create a helper user in Kopano to let Konnect establish a permenent session, configure the Univention webserver and make the neccesary config changes.
+To configure your Kopano Core and the Kopano WebApp app for login via OpenID Connect just execute `./run.sh` once. Running the script will take care of configuring the OpenID Connect Provider App, create a helper user in Kopano to let Konnect establish a permenent session, configure the Univention webserver and make the neccesary config changes.
 
 Running the script will also create a file called `.env` in the current directory. In this file all installation specific variables are stored. In case the FQDN should be changed, or the OpenID Connect Provider app is available under a different domain just change these values here and rerun the script.
 
