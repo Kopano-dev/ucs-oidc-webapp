@@ -10,7 +10,7 @@ services:
           - /etc/kopano/docker/:/kopano/ssl
 
     kopano_konnect:
-        image: kopano/kopano_konnect:0.33.4
+        image: kopano/kopano_konnect:0.33.5
         restart: always
         depends_on:
           - kopano_ssl
