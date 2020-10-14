@@ -25,7 +25,7 @@ To ensure compatibility with the configuration listener of Kopano4UCS the script
 
 ## Running the script
 
-To configure your Kopano Core and the Kopano WebApp app for login via OpenID Connect just execute `./run.sh` once. Running the script will take care of configuring the OpenID Connect Provider App, create a helper user in Kopano to let Konnect establish a permenent session, configure the Univention webserver and make the neccesary config changes.
+To configure your Kopano Core and the Kopano WebApp app for login via OpenID Connect just execute `./run.sh` once. Running the script will take care of configuring the OpenID Connect Provider App, create a helper user in Kopano to let Konnect establish a permanent session, configure the Univention webserver and make the necessary config changes.
 
 Running the script will also create a file called `.env` in the current directory. In this file all installation specific variables are stored. In case the FQDN should be changed, or the OpenID Connect Provider app is available under a different domain just change these values here and rerun the script.
 
@@ -37,7 +37,7 @@ Running the script should only take a few moments. After it has completed it wil
 - In case your system is not reachable through the default domains just specify any differing values during the run of the script
   - Please refer to the documentation of the OpenID Provider app on changing its domain
 - When enabling OIDC login for WebApp the old login mechanism is no longer available.
-- When configuring OIDC login for kopano-server then kopano-server needs to resolve the OIDC discovery document at startup (which means Konnect must already be running).
+- When configuring OIDC login for `kopano-server` then `kopano-server` needs to resolve the OIDC discovery document at startup (which means Konnect must already be running).
 - `/etc/ssl` is mounted into the Konnect container, so all ssl certificates trusted by the host are also trusted by Konnect.
 
 ## How to do this all manually
